@@ -7,6 +7,7 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	k8slabels "k8s.io/apimachinery/pkg/labels"
 	"k8s.io/apimachinery/pkg/util/intstr"
+	"k8s.io/utils/ptr"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 
 	"github.com/grafana/tempo-operator/apis/tempo/v1alpha1"
@@ -85,6 +86,9 @@ func statefulSet(params manifestutils.Params) (*v1.StatefulSet, error) {
 					NodeSelector:       cfg.NodeSelector,
 					Tolerations:        cfg.Tolerations,
 					Affinity:           manifestutils.DefaultAffinity(labels),
+					SecurityContext: &corev1.PodSecurityContext{
+						FSGroup: ptr.To(int64(10001)),
+					},
 					Containers: []corev1.Container{
 						{
 							Name:  "tempo",
